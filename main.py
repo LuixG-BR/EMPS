@@ -13,6 +13,7 @@ from routers import dispositivo
 from routers import monitoramento
 from routers import medicamento
 from routers import relatorio
+from routers import modo_monitoramento
 from routers import login
 
 
@@ -39,6 +40,7 @@ app.include_router(dispositivo.router)
 app.include_router(monitoramento.router)
 app.include_router(medicamento.router)
 app.include_router(relatorio.router)
+app.include_router(modo_monitoramento.router)
 app.include_router(login.router)
 
 @app.get("/")
