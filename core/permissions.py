@@ -116,3 +116,25 @@ def paciente_proprio_ou_admin_medico(
         status_code=status.HTTP_403_FORBIDDEN,
         detail="Acesso não permitido."
     )
+
+
+def somente_paciente(
+    usuario_token=Depends(usuario_ativo)
+):
+    id_perfil = usuario_token.get("perfil")
+
+    if str(id_perfil) != "3":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Acesso permitido apenas para pacientes."
+        )
+
+    try:
+        id_usuario = int(usuario_token["sub"])
+    except (KeyError, TypeError, ValueError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Identificação inválida no token."
+        )
+
+    return id_usuario
