@@ -18,6 +18,7 @@ class MonitoramentoResponse(BaseModel):
     frequencia_cardiaca: int
     movimento: float
     status: str
+    modo_monitoramento: str
 
     class Config:
         from_attributes = True

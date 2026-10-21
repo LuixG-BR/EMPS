@@ -49,6 +49,13 @@ class Paciente(Base):
         String(5)
     )
 
+    modo_monitoramento = Column(
+        String(20),
+        nullable=False,
+        default="normal",
+        server_default="normal"
+    )
+
     usuario = relationship(
         "Usuario"
     )

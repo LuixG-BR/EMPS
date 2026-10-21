@@ -1,4 +1,8 @@
+from fastapi import HTTPException
+from sqlalchemy.orm import Session
+
 from models.monitoramento import Monitoramento
+from models.paciente import Paciente
 from schemas.monitoramento import MonitoramentoCreate
 
 
@@ -32,25 +36,52 @@ def analisar_risco(bpm, movimento):
     elif movimento >= LIMITE_MOVIMENTO_ALERTA:
         return "Alerta em Movimento"
 
-
-    else:
-        return "Normal"
+    return "Normal"
 
 
+# MODO SPORT - IMPLEMENTACAO INICIAL SEGURA
+def analisar_risco_sport(bpm, movimento):
+
+    # Inicialmente preservamos a regra normal.
+    # As tolerancias para atividade fisica ainda
+    # precisam ser testadas e validadas.
+    return analisar_risco(bpm, movimento)
+
+
+def selecionar_analise(bpm, movimento, modo):
+
+    if modo == "sport":
+        return analisar_risco_sport(bpm, movimento)
+
+    return analisar_risco(bpm, movimento)
 
 def registrar_monitoramento(
-    db,
+    db: Session,
     dados: MonitoramentoCreate
 ):
+    paciente = db.query(Paciente).filter(
+        Paciente.id_paciente == dados.id_paciente
+    ).first()
 
-    status = analisar_risco(
+    if not paciente:
+        raise HTTPException(
+            status_code=404,
+            detail="Paciente nao encontrado."
+        )
+
+    modo = paciente.modo_monitoramento
+
+    status = selecionar_analise(
         dados.frequencia_cardiaca,
-        dados.movimento
+        dados.movimento,
+        modo
     )
 
     print(
-        "Análise:",
-        "BPM =", dados.frequencia_cardiaca,
+        "Analise:",
+        "Paciente =", dados.id_paciente,
+        "| Modo =", modo,
+        "| BPM =", dados.frequencia_cardiaca,
         "| Movimento =", dados.movimento,
         "| Status =", status
     )
@@ -58,7 +89,8 @@ def registrar_monitoramento(
     if status == "Normal":
         return {
             "mensagem": "Dados normais",
-            "status": status
+            "status": status,
+            "modo_monitoramento": modo
         }
 
     novo = Monitoramento(
@@ -66,7 +98,8 @@ def registrar_monitoramento(
         id_dispositivo=dados.id_dispositivo,
         frequencia_cardiaca=dados.frequencia_cardiaca,
         movimento=dados.movimento,
-        status=status
+        status=status,
+        modo_monitoramento=modo
     )
 
     db.add(novo)
@@ -77,10 +110,9 @@ def registrar_monitoramento(
 
 
 def listar_monitoramentos_paciente(
-    db,
+    db: Session,
     id_paciente: int
 ):
-
     return db.query(
         Monitoramento
     ).filter(
