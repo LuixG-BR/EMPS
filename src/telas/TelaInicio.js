@@ -193,52 +193,7 @@ export default function TelaInicio({
 
       {/* MEDICAÇÕES */}
 
-      <Card>
-        <SectionHeader
-          icon={Pill}
-          title="Próxima medicação"
-          subtitle="Não esqueça sua próxima dose"
-        />
 
-        <View style={styles.medicineContent}>
-          <View>
-            <Text style={styles.medicineName}>
-              Levetiracetam
-            </Text>
-
-            <Text style={styles.medicineDose}>
-              500 mg
-            </Text>
-          </View>
-
-          <View style={styles.timeBox}>
-            <Text style={styles.time}>
-              20:00
-            </Text>
-
-            <Text style={styles.timeLabel}>
-              hoje
-            </Text>
-          </View>
-        </View>
-
-        <TouchableOpacity
-          activeOpacity={0.8}
-          style={styles.linkButton}
-          onPress={() =>
-            setTela("medicacoes")
-          }
-        >
-          <Text style={styles.linkText}>
-            Ver todas as medicações
-          </Text>
-
-          <ArrowRight
-            size={18}
-            color={colors.primary}
-          />
-        </TouchableOpacity>
-      </Card>
 
       {/* SEGURANÇA */}
 
