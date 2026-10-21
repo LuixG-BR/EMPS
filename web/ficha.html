@@ -1942,12 +1942,7 @@
                 <div class="pagination">
 
 
-                    <span
-                        class="pagination-info"
-                        id="paginationInfo"
-                    >
-                        0 pacientes
-                    </span>
+                   <span class="pagination-info" id="paginationInfo">
 
 
                     <div
@@ -2269,9 +2264,8 @@
 
 
 <script src="js/api.js"></script>
-
 <script src="js/perfil.js"></script>
-
+<script src="js/busca.js"></script>
 
 <script>
 
@@ -2405,56 +2399,6 @@
     let paginaAtual = 1;
 
     const pacientesPorPagina = 8;
-
-
-
-    function carregarPacientes() {
-
-        /*
-         * Cadastro atual do paciente
-         * Luis Gabriel
-         */
-
-        pacientes = [
-
-            {
-                id: 1,
-                codigo: "1",
-                nome: "Luis Gabriel",
-                nomeCompleto: "Luis Gabriel",
-                email: "luis.user@email.com",
-                sexo: "Masculino",
-                telefone: "13981893503",
-                cpf: "123456789",
-                dataNascimento: "2009-05-18",
-                status: "Ativo"
-            }
-
-        ];
-
-
-        /*
-         * Atualiza o localStorage para retirar
-         * qualquer cadastro anterior, como o da Maria.
-         */
-
-        localStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(pacientes)
-        );
-
-
-        pacientesFiltrados =
-            [...pacientes];
-
-
-        paginaAtual = 1;
-
-
-        renderPatients();
-
-    }
-
 
 
     function getPatientValue(
@@ -3103,9 +3047,9 @@
 
 
 
-    function openPatient(
-        indice
-    ) {
+   window.location.href =
+    `paciente.html?id_paciente=${encodeURIComponent(id)}`;
+    {
 
         const paciente =
             pacientesFiltrados[

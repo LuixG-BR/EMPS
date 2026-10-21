@@ -414,17 +414,18 @@
         }
 
         .patient-avatar {
-            min-width: 80px;
-            width: 80px;
-            height: 80px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #e9e3ff, #d9e5ff);
-            color: #51428f;
-            font-size: 24px;
-            font-weight: 700;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .patient-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
 
         .patient-data {
@@ -446,6 +447,15 @@
         .status-active {
             background: #eaf8f0;
             color: #35986b;
+            border-radius: 4px;
+            padding: 5px 10px;
+            font-size: 9px;
+            font-weight: 600;
+        }
+
+        .status-inactive {
+            background: #fff0f0;
+            color: #c74e4e;
             border-radius: 4px;
             padding: 5px 10px;
             font-size: 9px;
@@ -1374,56 +1384,55 @@
                 </div>
 
 
+
                 <section class="patient-card panel">
 
                     <div class="patient-main">
 
                         <div class="patient-avatar">
-                            LG
+                            <img id="fotoPaciente" src="img/paciente-padrao.png" alt="Foto do paciente">
                         </div>
 
                         <div class="patient-data">
 
                             <div class="patient-name">
+                                <h1 id="nomePaciente">Carregando...</h1>
 
-                                <h1>Luis Gabriel Azevedo da Silva</h1>
-
-                                <span class="status-active">
-                                    Ativo
+                                <span id="statusPaciente" class="status-active">
+                                    Carregando...
                                 </span>
-
                             </div>
 
                             <div class="patient-details">
 
                                 <div class="detail">
                                     <i class="fa-regular fa-calendar"></i>
-                                    <span>17 anos (18/05/2009)</span>
+                                    <span id="idadeNascimento">Idade e nascimento</span>
                                 </div>
 
                                 <div class="detail">
                                     <i class="fa-solid fa-mars"></i>
-                                    <span>Masculino</span>
+                                    <span id="sexoPaciente">Sexo</span>
                                 </div>
 
                                 <div class="detail">
                                     <i class="fa-regular fa-address-card"></i>
-                                    <span>CPF: 123.456.789</span>
+                                    <span id="cpfPaciente">CPF: --</span>
                                 </div>
 
                                 <div class="detail">
                                     <i class="fa-solid fa-phone"></i>
-                                    <span>Telefone: (13) 98189-3503</span>
+                                    <span id="telefonePaciente">Telefone: --</span>
                                 </div>
 
                                 <div class="detail">
                                     <i class="fa-regular fa-envelope"></i>
-                                    <span>E-mail: luis.user@email.com</span>
+                                    <span id="emailPaciente">E-mail: --</span>
                                 </div>
 
                                 <div class="detail">
                                     <i class="fa-solid fa-calendar-days"></i>
-                                    <span>Data de nascimento: 18/05/2009</span>
+                                    <span id="nascimentoPaciente">Data de nascimento: --</span>
                                 </div>
 
                             </div>
@@ -1432,7 +1441,6 @@
 
                     </div>
 
-
                     <div class="patient-code">
 
                         <span class="code-label">
@@ -1440,23 +1448,21 @@
                         </span>
 
                         <div class="code-box">
+                            <span id="codigoPaciente">--</span>
 
-                            <span>PCT-0012</span>
-
-                            <button title="Copiar código">
+                            <button type="button" id="copiarCodigoPaciente" title="Copiar código">
                                 <i class="fa-regular fa-copy"></i>
                             </button>
-
                         </div>
 
                         <div class="code-info">
                             <small>Cadastrado em</small>
-                            <strong>10/02/2024</strong>
+                            <strong id="dataCadastroPaciente">--</strong>
                         </div>
 
                         <div class="code-info">
                             <small>Última consulta</small>
-                            <strong>09/05/2024</strong>
+                            <strong id="ultimaConsultaPaciente">--</strong>
                         </div>
 
                     </div>
@@ -1834,10 +1840,7 @@
                                 Nome do documento
                             </label>
 
-                            <input
-                                id="documentName"
-                                type="text"
-                                placeholder="Ex.: Exame de sangue - maio/2024"
+                            <input id="documentName" type="text" placeholder="Ex.: Exame de sangue - maio/2024"
                                 required>
 
                         </div>
@@ -1849,10 +1852,7 @@
                                 Arquivo
                             </label>
 
-                            <input
-                                id="documentFile"
-                                type="file"
-                                accept=".pdf,.png,.jpg,.jpeg,.webp,.doc,.docx"
+                            <input id="documentFile" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.doc,.docx"
                                 required>
 
                         </div>
@@ -1860,16 +1860,11 @@
 
                         <div class="modal-actions">
 
-                            <button
-                                class="cancel-modal"
-                                id="cancelDocument"
-                                type="button">
+                            <button class="cancel-modal" id="cancelDocument" type="button">
                                 Cancelar
                             </button>
 
-                            <button
-                                class="save-document"
-                                type="submit">
+                            <button class="save-document" type="submit">
                                 Salvar documento
                             </button>
 
@@ -1927,7 +1922,10 @@
            DADOS FUNCIONAIS
         ========================================================= */
 
-        const pacienteId = "PCT-0012";
+        // O ID vem da tela de busca: paciente.html?id_paciente=3
+        const parametrosURL = new URLSearchParams(window.location.search);
+        const pacienteId = parametrosURL.get("id_paciente");
+        const API_EMPS = "https://emps-backend-17ip.onrender.com";
 
         const dadosSinais = {
             frequenciaCardiaca: null,
@@ -1941,6 +1939,175 @@
         const crisesIniciais = [];
         const consultasIniciais = [];
         const documentosIniciais = [];
+
+
+        /* =========================================================
+           CARREGAR DADOS DO PACIENTE PELA API
+        ========================================================= */
+
+        function formatarDataPaciente(valor) {
+            if (!valor) return "--";
+
+            // Evita deslocamento de dia ao interpretar datas YYYY-MM-DD.
+            const texto = String(valor);
+            const partes = texto.split("T")[0].split("-");
+
+            if (partes.length === 3 && partes[0].length === 4) {
+                return `${partes[2]}/${partes[1]}/${partes[0]}`;
+            }
+
+            const data = new Date(valor);
+            return Number.isNaN(data.getTime())
+                ? texto
+                : data.toLocaleDateString("pt-BR");
+        }
+
+        function calcularIdadePaciente(valor) {
+            if (!valor) return null;
+
+            const partes = String(valor).split("T")[0].split("-");
+            if (partes.length !== 3) return null;
+
+            const nascimento = new Date(
+                Number(partes[0]),
+                Number(partes[1]) - 1,
+                Number(partes[2])
+            );
+
+            if (Number.isNaN(nascimento.getTime())) return null;
+
+            const hoje = new Date();
+            let idade = hoje.getFullYear() - nascimento.getFullYear();
+            const aindaNaoFezAniversario =
+                hoje.getMonth() < nascimento.getMonth() ||
+                (hoje.getMonth() === nascimento.getMonth() &&
+                    hoje.getDate() < nascimento.getDate());
+
+            if (aindaNaoFezAniversario) idade--;
+            return idade >= 0 ? idade : null;
+        }
+
+        function definirTexto(id, texto) {
+            const elemento = document.getElementById(id);
+            if (elemento) elemento.textContent = texto;
+        }
+
+        function formatarSexoPaciente(sexo) {
+            if (!sexo) return "Sexo não informado";
+
+            const valor = String(sexo).trim().toLowerCase();
+            if (["m", "masculino", "male"].includes(valor)) return "Masculino";
+            if (["f", "feminino", "female"].includes(valor)) return "Feminino";
+            return String(sexo);
+        }
+
+        function formatarStatusPaciente(status) {
+            if (typeof status === "boolean") return status ? "Ativo" : "Inativo";
+            if (status === null || status === undefined || status === "") {
+                return "Status não informado";
+            }
+
+            const valor = String(status).trim();
+            if (["true", "1", "ativo", "active"].includes(valor.toLowerCase())) return "Ativo";
+            if (["false", "0", "inativo", "inactive"].includes(valor.toLowerCase())) return "Inativo";
+            return valor;
+        }
+
+        async function carregarDadosPaciente() {
+            const token = localStorage.getItem("token");
+
+            if (!pacienteId) {
+                definirTexto("nomePaciente", "Paciente não identificado");
+                definirTexto("statusPaciente", "ID ausente");
+                console.error("O parâmetro id_paciente não foi informado na URL.");
+                return;
+            }
+
+            if (!token) {
+                window.location.href = "login.html";
+                return;
+            }
+
+            try {
+                const resposta = await fetch(`${API_EMPS}/medicos/me/pacientes`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Accept": "application/json"
+                    }
+                });
+
+                if (resposta.status === 401) {
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("usuario");
+                    window.location.href = "login.html";
+                    return;
+                }
+
+                if (!resposta.ok) {
+                    throw new Error(`A API retornou o status ${resposta.status}`);
+                }
+
+                const retorno = await resposta.json();
+                const lista = Array.isArray(retorno)
+                    ? retorno
+                    : Array.isArray(retorno.pacientes)
+                        ? retorno.pacientes
+                        : [];
+
+                const paciente = lista.find(item =>
+                    String(item.id_paciente) === String(pacienteId)
+                );
+
+                if (!paciente) {
+                    definirTexto("nomePaciente", "Paciente não encontrado");
+                    definirTexto("statusPaciente", "Indisponível");
+                    console.warn("O paciente não foi encontrado na lista do médico.", {
+                        id_paciente: pacienteId,
+                        retorno
+                    });
+                    return;
+                }
+
+                const nome = paciente.nome || "Nome não informado";
+                const dataNascimento = paciente.data_nascimento || paciente.nascimento || null;
+                const idade = calcularIdadePaciente(dataNascimento);
+                const nascimentoFormatado = formatarDataPaciente(dataNascimento);
+                const sexo = formatarSexoPaciente(paciente.sexo);
+                const status = formatarStatusPaciente(paciente.status);
+
+                definirTexto("nomePaciente", nome);
+                definirTexto("statusPaciente", status);
+                definirTexto(
+                    "idadeNascimento",
+                    idade === null
+                        ? `Nascimento: ${nascimentoFormatado}`
+                        : `${idade} ${idade === 1 ? "ano" : "anos"} (${nascimentoFormatado})`
+                );
+                definirTexto("sexoPaciente", sexo);
+                definirTexto("cpfPaciente", `CPF: ${paciente.cpf || "--"}`);
+                definirTexto("telefonePaciente", `Telefone: ${paciente.telefone || "--"}`);
+                definirTexto("emailPaciente", `E-mail: ${paciente.email || "--"}`);
+                definirTexto("nascimentoPaciente", `Data de nascimento: ${nascimentoFormatado}`);
+                definirTexto("codigoPaciente", paciente.codigo_paciente || pacienteId);
+
+                const elementoStatus = document.getElementById("statusPaciente");
+                if (elementoStatus) {
+                    const statusInativo = status.toLowerCase().includes("inativ");
+                    elementoStatus.classList.toggle("status-active", !statusInativo);
+                    elementoStatus.classList.toggle("status-inactive", statusInativo);
+                }
+
+                // A rota de listagem não fornece data de cadastro nem última consulta.
+                definirTexto("dataCadastroPaciente", formatarDataPaciente(paciente.data_cadastro));
+                definirTexto("ultimaConsultaPaciente", formatarDataPaciente(paciente.ultima_consulta));
+
+            } catch (error) {
+                console.error("Erro ao carregar os dados do paciente:", error);
+                definirTexto("nomePaciente", "Não foi possível carregar o paciente");
+                definirTexto("statusPaciente", "Erro ao carregar");
+            }
+        }
 
 
         /* =========================================================
@@ -2025,7 +2192,7 @@
 
                 heartStatus.textContent =
                     dadosSinais.frequenciaCardiaca >= 60 &&
-                    dadosSinais.frequenciaCardiaca <= 100
+                        dadosSinais.frequenciaCardiaca <= 100
                         ? "Dentro do normal"
                         : "Fora da faixa de referência";
 
@@ -2182,8 +2349,8 @@
 
                         <td>
                             ${crise.observacao ||
-                            crise.descricao ||
-                            "--"}
+                    crise.descricao ||
+                    "--"}
                         </td>
 
                         <td>
@@ -2257,14 +2424,14 @@
                             ${relatorio.data || "Data não informada"}
                             ·
                             ${relatorio.medico ||
-                            "Profissional não informado"}
+                "Profissional não informado"}
                         </small>
 
                         <p>
                             ${relatorio.texto ||
-                            relatorio.descricao ||
-                            relatorio.observacao ||
-                            "Sem descrição."}
+                relatorio.descricao ||
+                relatorio.observacao ||
+                "Sem descrição."}
                         </p>
 
                     </div>
@@ -2753,17 +2920,18 @@
         ========================================================= */
 
         const copyButton =
-            document.querySelector(".code-box button");
+            document.getElementById("copiarCodigoPaciente");
 
-
-        copyButton.addEventListener(
+        if (copyButton) copyButton.addEventListener(
             "click",
             async () => {
+
+                const codigo = document.getElementById("codigoPaciente")?.textContent || pacienteId || "";
 
                 try {
 
                     await navigator.clipboard.writeText(
-                        pacienteId
+                        codigo
                     );
 
                 } catch (error) {
@@ -2772,7 +2940,7 @@
                         document.createElement("textarea");
 
                     textarea.value =
-                        pacienteId;
+                        codigo;
 
                     document.body.appendChild(
                         textarea
@@ -2853,6 +3021,7 @@
            INICIALIZAÇÃO
         ========================================================= */
 
+        carregarDadosPaciente();
         renderSignals();
         renderCrises();
         renderNotes();
