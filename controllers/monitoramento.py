@@ -7,53 +7,86 @@ from schemas.monitoramento import MonitoramentoCreate
 
 
 # LIMITES EXPERIMENTAIS DO MPU6050
+NORMAL_BPM_ALERTA = 120
+NORMAL_BPM_EMERGENCIA = 150
 
-LIMITE_MOVIMENTO_ALERTA = 3.0
-LIMITE_MOVIMENTO_INTENSO = 7.0
-LIMITE_MOVIMENTO_MUITO_INTENSO = 10.0
+NORMAL_MOV_ALERTA = 3.0
+NORMAL_MOV_INTENSO = 7.0
+NORMAL_MOV_EMERGENCIA = 10.00
+
+# LIMITES - MODO SPORT
+SPORT_BPM_ALERTA = 140
+SPORT_BPM_EMERGENCIA = 170
+
+SPORT_MOV_ALERTA = 5.0
+SPORT_MOV_INTENSO = 9.0
+SPORT_MOV_EMERGENCIA = 12.0
 
 
-def analisar_risco(bpm, movimento):
+def analisar_risco_normal(bpm, movimento):
 
-    if bpm >= 150 and movimento >= 10:
+    if bpm >= NORMAL_BPM_EMERGENCIA and movimento >= NORMAL_MOV_EMERGENCIA:
         return "Emergencia em BPM | Emergencia em Movimento"
 
-    elif bpm >= 150:
+    elif bpm >= NORMAL_BPM_EMERGENCIA:
         return "Emergencia em BPM"
 
-    elif movimento >= 10:
+    elif movimento >= NORMAL_MOV_EMERGENCIA:
         return "Emergencia em Movimento"
 
-    elif movimento >= LIMITE_MOVIMENTO_INTENSO:
+    elif movimento >= NORMAL_MOV_INTENSO:
         return "Movimento Intenso"
 
-    elif bpm >= 120 and movimento >= LIMITE_MOVIMENTO_ALERTA:
+    elif bpm >= NORMAL_BPM_ALERTA and movimento >= NORMAL_MOV_ALERTA:
         return "Alerta em BPM | Alerta em Movimento"
 
-    elif bpm >= 120:
+    elif bpm >= NORMAL_BPM_ALERTA:
         return "Alerta em BPM"
 
-    elif movimento >= LIMITE_MOVIMENTO_ALERTA:
+    elif movimento >= NORMAL_MOV_ALERTA:
         return "Alerta em Movimento"
 
     return "Normal"
 
 
-# MODO SPORT - IMPLEMENTACAO INICIAL SEGURA
 def analisar_risco_sport(bpm, movimento):
 
-    # Inicialmente preservamos a regra normal.
-    # As tolerancias para atividade fisica ainda
-    # precisam ser testadas e validadas.
-    return analisar_risco(bpm, movimento)
+    if bpm >= SPORT_BPM_EMERGENCIA and movimento >= SPORT_MOV_EMERGENCIA:
+        return "Emergencia em BPM | Emergencia em Movimento"
+
+    elif bpm >= SPORT_BPM_EMERGENCIA:
+        return "Emergencia em BPM"
+
+    elif movimento >= SPORT_MOV_EMERGENCIA:
+        return "Emergencia em Movimento"
+
+    elif movimento >= SPORT_MOV_INTENSO:
+        return "Movimento Intenso"
+
+    elif bpm >= SPORT_BPM_ALERTA and movimento >= SPORT_MOV_ALERTA:
+        return "Alerta em BPM | Alerta em Movimento"
+
+    elif bpm >= SPORT_BPM_ALERTA:
+        return "Alerta em BPM"
+
+    elif movimento >= SPORT_MOV_ALERTA:
+        return "Alerta em Movimento"
+
+    return "Normal"
 
 
-def selecionar_analise(bpm, movimento, modo):
+def selecionar_regra(bpm, movimento, modo):
 
-    if modo == "sport":
+    if modo == "normal":
+        return analisar_risco_normal(bpm, movimento)
+
+    elif modo == "sport":
         return analisar_risco_sport(bpm, movimento)
 
-    return analisar_risco(bpm, movimento)
+    raise ValueError(
+        "Modo de monitoramento invalido."
+    )
+    
 
 def registrar_monitoramento(
     db: Session,
@@ -71,20 +104,16 @@ def registrar_monitoramento(
 
     modo = paciente.modo_monitoramento
 
-    status = selecionar_analise(
-        dados.frequencia_cardiaca,
-        dados.movimento,
-        modo
-    )
+    if modo not in ("normal", "sport"):
+        raise HTTPException(
+            status_code=422,
+            detail="Modo de monitoramento invalido."
+        )
 
-    print(
-        "Analise:",
-        "Paciente =", dados.id_paciente,
-        "| Modo =", modo,
-        "| BPM =", dados.frequencia_cardiaca,
-        "| Movimento =", dados.movimento,
-        "| Status =", status
-    )
+    bpm = dados.frequencia_cardiaca
+    movimento = dados.movimento
+
+    status = selecionar_regra(bpm, movimento, modo)
 
     if status == "Normal":
         return {
@@ -96,8 +125,8 @@ def registrar_monitoramento(
     novo = Monitoramento(
         id_paciente=dados.id_paciente,
         id_dispositivo=dados.id_dispositivo,
-        frequencia_cardiaca=dados.frequencia_cardiaca,
-        movimento=dados.movimento,
+        frequencia_cardiaca=bpm,
+        movimento=movimento,
         status=status,
         modo_monitoramento=modo
     )
