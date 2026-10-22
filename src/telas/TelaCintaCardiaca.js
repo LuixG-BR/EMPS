@@ -4,6 +4,7 @@ import bleService from "../services/bleService";
 import monitoramentoService from "../services/monitoramentoService";
 import monitoramentoApiService from "../services/monitoramentoApiService";
 import usuarioService from "../services/usuarioService";
+import sportModeService from "../services/sportModeService";
 
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Bluetooth, BluetoothConnected, BatteryMedium, HeartPulse, Activity, Unplug } from "lucide-react-native";
@@ -32,6 +33,54 @@ export default function TelaCintaCardiaca({ tela, setTela }) {
 
   const [dispositivo, setDispositivo] = useState(null);
 
+  const [modoSport, setModoSport] = useState(false);
+  const [carregandoSport, setCarregandoSport] = useState(true);
+  const [alterandoSport, setAlterandoSport] = useState(false);
+
+
+  async function carregarModoSport() {
+    try {
+      setCarregandoSport(true);
+
+      const modo = await sportModeService.consultarModo();
+
+      setModoSport(modo === "sport");
+
+      console.log("Modo consultado na API:", modo);
+    } catch (erro) {
+      console.log(
+        "Erro ao consultar Modo Sport:",
+        erro.response?.data || erro.message
+      );
+    } finally {
+      setCarregandoSport(false);
+    }
+  }
+
+  async function alternarModoSport() {
+    if (alterandoSport || carregandoSport) return;
+
+    try {
+      setAlterandoSport(true);
+
+      const novoModo = modoSport ? "normal" : "sport";
+
+      const modoConfirmado =
+        await sportModeService.definirModo(novoModo);
+
+      setModoSport(modoConfirmado === "sport");
+
+      console.log("Modo atualizado:", modoConfirmado);
+    } catch (erro) {
+      console.log(
+        "Erro ao atualizar Modo Sport:",
+        erro.response?.data || erro.message
+      );
+    } finally {
+      setAlterandoSport(false);
+    }
+  }
+
   async function procurarCinta() {
     try {
       setProcurando(true);
@@ -46,6 +95,7 @@ export default function TelaCintaCardiaca({ tela, setTela }) {
       setDispositivo(dispositivoConectado);
       setConectado(true);
       console.log("Cinta EMPS conectada com sucesso.");
+      await carregarModoSport();
 
       bleService.monitorarDados(
         dispositivoConectado,
@@ -372,6 +422,31 @@ export default function TelaCintaCardiaca({ tela, setTela }) {
 
       {/* BOTÕES */}
 
+      {conectado && (
+        <TouchableOpacity
+          style={[
+            styles.primaryButton,
+            (carregandoSport || alterandoSport) &&
+            styles.disabledButton,
+          ]}
+          activeOpacity={0.85}
+          onPress={alternarModoSport}
+          disabled={carregandoSport || alterandoSport}
+        >
+          <Activity size={21} color={colors.white} />
+
+          <Text style={styles.primaryButtonText}>
+            {carregandoSport
+              ? "Carregando Modo Sport..."
+              : alterandoSport
+                ? "Alterando Modo Sport..."
+                : modoSport
+                  ? "Desativar Modo Sport"
+                  : "Ativar Modo Sport"}
+          </Text>
+        </TouchableOpacity>
+      )}
+
       {!conectado ? (
         <TouchableOpacity
           style={[
@@ -395,6 +470,32 @@ export default function TelaCintaCardiaca({ tela, setTela }) {
         </TouchableOpacity>
       ) : (
         <>
+
+          {/* MODO SPORT */}
+
+          <TouchableOpacity
+            style={[
+              styles.primaryButton,
+              (carregandoSport || alterandoSport) &&
+              styles.disabledButton,
+            ]}
+            activeOpacity={0.85}
+            onPress={alternarModoSport}
+            disabled={carregandoSport || alterandoSport}
+          >
+            <Activity size={21} color={colors.white} />
+
+            <Text style={styles.primaryButtonText}>
+              {carregandoSport
+                ? "Consultando modo..."
+                : alterandoSport
+                  ? "Atualizando modo..."
+                  : modoSport
+                    ? "Desativar Modo Sport"
+                    : "Ativar Modo Sport"}
+            </Text>
+          </TouchableOpacity>
+
           {/* ENCERRAR MONITORAMENTO */}
 
           <TouchableOpacity
