@@ -470,32 +470,6 @@ export default function TelaCintaCardiaca({ tela, setTela }) {
         </TouchableOpacity>
       ) : (
         <>
-
-          {/* MODO SPORT */}
-
-          <TouchableOpacity
-            style={[
-              styles.primaryButton,
-              (carregandoSport || alterandoSport) &&
-              styles.disabledButton,
-            ]}
-            activeOpacity={0.85}
-            onPress={alternarModoSport}
-            disabled={carregandoSport || alterandoSport}
-          >
-            <Activity size={21} color={colors.white} />
-
-            <Text style={styles.primaryButtonText}>
-              {carregandoSport
-                ? "Consultando modo..."
-                : alterandoSport
-                  ? "Atualizando modo..."
-                  : modoSport
-                    ? "Desativar Modo Sport"
-                    : "Ativar Modo Sport"}
-            </Text>
-          </TouchableOpacity>
-
           {/* ENCERRAR MONITORAMENTO */}
 
           <TouchableOpacity
