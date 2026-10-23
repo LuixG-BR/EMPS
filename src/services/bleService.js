@@ -15,6 +15,7 @@ const NOME_ESP32 = "EMPS_ESP32";
 const SERVICE_UUID = "12345678-1234-1234-1234-1234567890ab";
 const CHARACTERISTIC_UUID = "abcd1234-1234-1234-1234-1234567890ab";
 
+let assinaturaMonitoramento = null;
 
 async function solicitarPermissoes() {
 
@@ -207,45 +208,63 @@ async function desconectarCinta(dispositivo) {
 
 function monitorarDados(dispositivo, aoReceberDados) {
     if (!dispositivo) {
-        throw new Error(
-            "Dispositivo BLE não conectado."
-        );
+        throw new Error("Dispositivo BLE não conectado.");
+    }
+
+    // Evita criar duas assinaturas simultâneas.
+    if (assinaturaMonitoramento) {
+        assinaturaMonitoramento.remove();
+        assinaturaMonitoramento = null;
     }
 
     console.log("Iniciando monitoramento BLE...");
 
-    const subscription = dispositivo.monitorCharacteristicForService(
-        SERVICE_UUID,
-        CHARACTERISTIC_UUID,
-
-        (erro, characteristic) => {
-
-            if (erro) {
-                console.log("Erro ao receber dados BLE:", erro);
-                return;
-            }
-
-            if (!characteristic?.value) {
-                return;
-            }
-
-            try {
-                const mensagem = decodeBase64(
-                    characteristic.value
-                );
-                console.log("Pacote recebido:", mensagem);
-
-                const dados = processarPacote(mensagem);
-                if (dados && aoReceberDados) {
-                    aoReceberDados(dados);
+    assinaturaMonitoramento =
+        dispositivo.monitorCharacteristicForService(
+            SERVICE_UUID,
+            CHARACTERISTIC_UUID,
+            (erro, characteristic) => {
+                if (erro) {
+                    console.log(
+                        "Erro ao receber dados BLE:",
+                        erro
+                    );
+                    return;
                 }
-            } catch (erroDecode) {
-                console.log("Erro ao decodificar pacote BLE:", erroDecode);
-            }
-        }
-    );
 
-    return subscription;
+                if (!characteristic?.value) {
+                    return;
+                }
+
+                try {
+                    const mensagem = decodeBase64(
+                        characteristic.value
+                    );
+
+                    const dados = processarPacote(mensagem);
+
+                    if (dados && aoReceberDados) {
+                        aoReceberDados(dados);
+                    }
+                } catch (erroDecode) {
+                    console.log(
+                        "Erro ao decodificar pacote BLE:",
+                        erroDecode
+                    );
+                }
+            }
+        );
+
+    return assinaturaMonitoramento;
+}
+
+function pararMonitoramentoDados() {
+    if (assinaturaMonitoramento) {
+        assinaturaMonitoramento.remove();
+        assinaturaMonitoramento = null;
+
+        console.log("Assinatura BLE encerrada.");
+    }
 }
 
 function processarPacote(mensagem) {
@@ -294,6 +313,7 @@ const bleService = {
     conectarCinta,
     desconectarCinta,
     monitorarDados,
+    pararMonitoramentoDados,
     processarPacote
 };
 

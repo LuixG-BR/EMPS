@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import bleService from "../services/bleService";
 import monitoramentoService from "../services/monitoramentoService";
 import monitoramentoApiService from "../services/monitoramentoApiService";
+import monitoramentoBackgroundService from "../services/monitoramentoBackgroundService";
 import usuarioService from "../services/usuarioService";
 import sportModeService from "../services/sportModeService";
 
@@ -13,6 +14,7 @@ import AppShell from "../componentes/AppShell";
 
 import { colors } from "../styles/colors";
 import { spacing } from "../styles/spacing";
+import notificacoes from "../services/notificacoes";
 
 export default function TelaCintaCardiaca({ tela, setTela }) {
   const [idPaciente, setIdPaciente] = useState(null)
@@ -133,8 +135,12 @@ export default function TelaCintaCardiaca({ tela, setTela }) {
     }
   }
 
+
   async function desconectarCinta() {
     try {
+      bleService.pararMonitoramentoDados();
+
+      await monitoramentoBackgroundService.parar();
       await bleService.desconectarCinta(dispositivo);
     } catch (erro) {
       console.log("Erro ao desconectar:", erro);
@@ -143,6 +149,7 @@ export default function TelaCintaCardiaca({ tela, setTela }) {
       setConectado(false);
     }
   }
+
 
   useEffect(() => {
     async function carregarPaciente() {
@@ -176,66 +183,39 @@ export default function TelaCintaCardiaca({ tela, setTela }) {
   }, []);
 
   useEffect(() => {
-
     if (!conectado || !idPaciente) {
       return;
     }
 
-    const intervalo = setInterval(
-      async () => {
+    let cancelado = false;
 
-        const medias =
-          monitoramentoService
-            .calcularMedias();
+    async function iniciarMonitoramento() {
+      try {
+        await monitoramentoBackgroundService.iniciar({
+          idPaciente: idPaciente,
+          idDispositivo: ID_DISPOSITIVO,
+        });
 
-        if (!medias) {
-
-          console.log(
-            "Sem amostras para enviar."
-          );
-
-          return;
+        if (!cancelado) {
+          notificacoes.sucesso("Monitoramento em segundo plano iniciado.");
         }
-
-
-        console.log(
-          "Média calculada:",
-          medias
-        );
-
-
-        try {
-
-          const resposta =
-            await monitoramentoApiService
-              .enviarMedia({
-                idPaciente: idPaciente,
-                idDispositivo: ID_DISPOSITIVO,
-                frequenciaCardiaca: medias.frequencia_cardiaca,
-                movimento: medias.movimento,
-              });
-
-          console.log("Resultado da análise:", resposta);
-
-          // API recebeu com sucesso.
-          monitoramentoService.limparAmostras();
-        } catch (erro) {
-          console.log(
-            "Falha no envio. " +
-            "Amostras serão mantidas."
+      } catch (erro) {
+        if (!cancelado) {
+          notificacoes.erro(
+            "Erro ao iniciar monitoramento em segundo plano:",
+            erro.message
           );
         }
-      },
+      }
+    }
 
-      // TESTE: 10 segundos
-      10000
-    );
+    iniciarMonitoramento();
 
     return () => {
-      clearInterval(intervalo);
+      cancelado = true;
     };
   }, [conectado, idPaciente]);
-
+  
   return (
     <AppShell
       tela={tela}
