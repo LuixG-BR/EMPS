@@ -39,7 +39,8 @@
           "isBackgroundEnabled": false,
           "bluetoothAlwaysPermission": "O EMPS utiliza Bluetooth para conectar à cinta de monitoramento."
         }
-      ]
+      ],
+      "./withAndroidForegroundService"
     ],
     "extra": {
       "eas": {

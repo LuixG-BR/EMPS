@@ -50,6 +50,7 @@ const opcoesNotificacao = {
   taskIcon: { name: "ic_launcher", type: "mipmap" },
   color: "#5630A6",
   linkingURI: "emps://cinta",
+  foregroundServiceType: ["connectedDevice"],
   parameters: {},
 };
 
