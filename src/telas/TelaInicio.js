@@ -24,6 +24,7 @@ import StatusBadge from "../componentes/StatusBadge";
 import PrimaryButton from "../componentes/PrimaryButton";
 
 import usuarioService from "../services/usuarioService";
+import { registrarTokenPush } from "../services/pushNotificationService";
 
 import { colors } from "../styles/colors";
 import { spacing } from "../styles/spacing";
@@ -49,7 +50,19 @@ export default function TelaInicio({
       }
     }
 
+    async function registrarNotificacoes() {
+      try {
+        await registrarTokenPush();
+      } catch (erro) {
+        console.warn(
+          "Não foi possível registrar o token push:",
+          erro.response?.data || erro.message
+        );
+      }
+    }
+
     carregarUsuario();
+    registrarNotificacoes();
   }, []);
 
   return (
@@ -57,9 +70,8 @@ export default function TelaInicio({
       tela={tela}
       setTela={setTela}
       eyebrow="Seu acompanhamento"
-      title={`Olá, ${
-        usuario?.nome?.split(" ")[0] || "Paciente"
-      }`}
+      title={`Olá, ${usuario?.nome?.split(" ")[0] || "Paciente"
+        }`}
       subtitle="Acompanhe seus principais indicadores de saúde e o status da sua cinta EMPS."
     >
       {/* STATUS PRINCIPAL */}

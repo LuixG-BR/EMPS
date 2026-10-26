@@ -15,7 +15,9 @@
     "axios": "^1.20.0",
     "base-64": "^1.0.0",
     "expo": "~54.0.37",
+    "expo-constants": "~18.0.14",
     "expo-dev-client": "~6.0.21",
+    "expo-notifications": "~0.32.17",
     "expo-status-bar": "~3.0.9",
     "lucide-react-native": "^1.16.0",
     "react": "19.1.0",
@@ -28,6 +30,15 @@
     "react-native-svg": "15.12.1",
     "react-native-toast-message": "^2.4.0",
     "react-native-web": "^0.21.0"
+  },
+  "expo": {
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "exclude": [
+          "react-native-background-actions"
+        ]
+      }
+    }
   },
   "private": true,
   "devDependencies": {

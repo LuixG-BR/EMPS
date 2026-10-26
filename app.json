@@ -40,7 +40,8 @@
           "bluetoothAlwaysPermission": "O EMPS utiliza Bluetooth para conectar à cinta de monitoramento."
         }
       ],
-      "./withAndroidForegroundService"
+      "./withAndroidForegroundService",
+      "expo-notifications"
     ],
     "extra": {
       "eas": {
