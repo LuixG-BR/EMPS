@@ -591,36 +591,54 @@
            BOTÃO
         ========================================= */
 
+        .botoes-acesso {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 15px;
+            margin-top: 25px;
+        }
+
         .btn-equipe {
             width: 100%;
+            min-height: 58px;
+            padding: 15px 18px;
 
-            margin-top: 25px;
-            padding: 17px 30px;
-
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
             text-align: center;
             text-decoration: none;
 
             font-family: "Oswald", sans-serif;
-
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 600;
 
             color: #181818;
-
             background: #e5b8ee;
-
+            border: 1px solid transparent;
             border-radius: 12px;
 
             transition:
                 transform 0.2s ease,
-                background 0.2s ease;
+                background 0.2s ease,
+                border-color 0.2s ease;
+        }
+
+        .btn-equipe.paciente {
+            color: #fff;
+            background: #654795;
+            border-color: rgba(255, 255, 255, 0.35);
         }
 
         .btn-equipe:hover {
             background: #d79ce5;
             transform: translateY(-2px);
+        }
+
+        .btn-equipe.paciente:hover {
+            background: #4c347c;
         }
 
 
@@ -1090,9 +1108,13 @@
                 font-size: 14px;
             }
 
+            .botoes-acesso {
+                gap: 12px;
+            }
+
             .btn-equipe {
-                font-size: 17px;
-                padding: 16px 20px;
+                font-size: 15px;
+                padding: 14px 10px;
             }
 
             .equipe-imagem {
@@ -1294,9 +1316,14 @@
                 font-size: 13px;
             }
 
+            .botoes-acesso {
+                gap: 8px;
+            }
+
             .btn-equipe {
-                font-size: 16px;
-                padding: 15px 18px;
+                font-size: 14px;
+                padding: 13px 7px;
+                overflow-wrap: anywhere;
             }
 
             .equipe-imagem img {
@@ -1651,9 +1678,15 @@
                 o cuidado.
             </p>
 
-            <a href="login.html" class="btn-equipe">
-                Conectar à EMPS
-            </a>
+            <div class="botoes-acesso">
+                <a href="login.html" class="btn-equipe medico">
+                    Conectar como médico
+                </a>
+
+                <a href="loginpaciente.html" class="btn-equipe paciente">
+                    Conectar como paciente
+                </a>
+            </div>
 
         </div>
 
