@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "594895621808",
+    "project_id": "emps-e97f0",
+    "storage_bucket": "emps-e97f0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:594895621808:android:0c79553ae3f24440dbf575",
+        "android_client_info": {
+          "package_name": "com.luixgbr.EMPS"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCR9JHQ94SnJGkSz-RKQcG4oG0dJVUdCi8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
