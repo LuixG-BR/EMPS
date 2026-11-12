@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { View } from "react-native";
 
 import authStorage from "../storage/authStorage";
 
@@ -13,82 +14,89 @@ import TelaMonitoramento from "../telas/TelaMonitoramento";
 
 export default function AppNavigator() {
   const [tela, setTela] = useState(null);
+  const [telasVisitadas, setTelasVisitadas] = useState([]);
 
   useEffect(() => {
     async function verificarLogin() {
       const token = await authStorage.buscarToken();
 
-      if (token) {
-        setTela("inicio");
-      } else {
-        setTela("login");
-      }
+      setTela(token ? "inicio" : "login");
     }
 
     verificarLogin();
   }, []);
 
-  switch (tela) {
-    case "login":
-      return <TelaLogin setTela={setTela} />;
+  // Mantém as telas visitadas montadas.
+  useEffect(() => {
+    if (!tela) return;
 
-    case "inicio":
-      return (
-        <TelaInicio
-          tela={tela}
-          setTela={setTela}
-        />
-      );
+    if (tela === "login") {
+      setTelasVisitadas(["login"]);
+      return;
+    }
 
-    case "perfil":
-      return (
-        <TelaPerfil
-          tela={tela}
-          setTela={setTela}
-        />
-      );
+    setTelasVisitadas((anteriores) => {
+      if (anteriores.includes(tela)) {
+        return anteriores;
+      }
 
-    case "medicacoes":
-      return (
-        <TelaMedicacoes
-          tela={tela}
-          setTela={setTela}
-        />
-      );
+      return [...anteriores, tela];
+    });
+  }, [tela]);
 
-    case "analises":
-      return (
-        <TelaAnalises
-          tela={tela}
-          setTela={setTela}
-        />
-      );
+  function renderizarTela(nome) {
+    const props = {
+      tela: nome,
+      setTela,
+    };
 
-    case "cinta":
-      return (
-        <TelaCintaCardiaca
-          tela={tela}
-          setTela={setTela}
-        />
-      );
+    switch (nome) {
+      case "login":
+        return <TelaLogin setTela={setTela} />;
 
-    case "registrarCrise":
-      return (
-        <TelaRegistrarCrise
-          tela={tela}
-          setTela={setTela}
-        />
-      );
+      case "inicio":
+        return <TelaInicio {...props} />;
+
+      case "perfil":
+        return <TelaPerfil {...props} />;
+
+      case "medicacoes":
+        return <TelaMedicacoes {...props} />;
+
+      case "analises":
+        return <TelaAnalises {...props} />;
+
+      case "cinta":
+        return <TelaCintaCardiaca {...props} />;
+
+      case "registrarCrise":
+        return <TelaRegistrarCrise {...props} />;
 
       case "monitoramento":
-  return (
-    <TelaMonitoramento
-      tela={tela}
-      setTela={setTela}
-    />
-  );
+        return <TelaMonitoramento {...props} />;
 
-    default:
-      return null;
+      default:
+        return null;
+    }
   }
+
+  if (!tela) {
+    return null;
+  }
+
+  return (
+    <View style={{ flex: 1 }}>
+      {telasVisitadas.map((nome) => (
+        <View
+          key={nome}
+          style={{
+            flex: 1,
+            display: tela === nome ? "flex" : "none",
+          }}
+        >
+          {renderizarTela(nome)}
+        </View>
+      ))}
+    </View>
+  );
 }
