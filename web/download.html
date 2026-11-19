@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#654795">
+
+    <title>Baixar EMPS | Aplicativo Android</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: "Roboto", Arial, sans-serif;
+            background: #f7f5fa;
+            color: #222;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            padding: 22px 8%;
+            background: #654795;
+            color: white;
+        }
+
+        .logo {
+            font-family: "Oswald", sans-serif;
+            font-size: 30px;
+            font-weight: 700;
+        }
+
+        main {
+            width: 100%;
+            max-width: 1050px;
+            margin: auto;
+            padding: 65px 25px;
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            align-items: center;
+            gap: 65px;
+        }
+
+        .conteudo h1 {
+            font-family: "Oswald", sans-serif;
+            font-size: 48px;
+            color: #4c347c;
+            margin-bottom: 20px;
+        }
+
+        .conteudo p {
+            font-size: 16px;
+            line-height: 1.7;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .versao {
+            display: inline-block;
+            padding: 7px 14px;
+            border-radius: 20px;
+            background: #e9def5;
+            color: #654795;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 25px;
+        }
+
+        .botao {
+            display: inline-block;
+            padding: 16px 28px;
+            background: #654795;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-family: "Oswald", sans-serif;
+            font-size: 19px;
+            font-weight: 600;
+            transition: .2s;
+        }
+
+        .botao:hover {
+            background: #4c347c;
+            transform: translateY(-2px);
+        }
+
+        .requisitos {
+            margin-top: 25px;
+            font-size: 13px !important;
+        }
+
+        .qr-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, .07);
+            text-align: center;
+        }
+
+        .qr-card h2 {
+            font-family: "Oswald", sans-serif;
+            color: #4c347c;
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .qr-card p {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        #qrcode {
+            width: 210px;
+            height: 210px;
+            object-fit: contain;
+            max-width: 100%;
+        }
+
+        .aviso {
+            max-width: 1050px;
+            margin: 0 auto 35px;
+            padding: 18px 22px;
+            border-left: 4px solid #8e68ba;
+            background: #eee8f5;
+            color: #51465f;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        footer {
+            padding: 25px;
+            background: #151515;
+            color: white;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        footer a {
+            color: #dba8eb;
+            text-decoration: none;
+        }
+
+        @media (max-width: 750px) {
+            main {
+                grid-template-columns: 1fr;
+                gap: 40px;
+                padding: 45px 22px;
+            }
+
+            .conteudo {
+                text-align: center;
+            }
+
+            .conteudo h1 {
+                font-size: 38px;
+            }
+
+            .qr-card {
+                max-width: 350px;
+                width: 100%;
+                margin: auto;
+            }
+
+            .aviso {
+                margin: 0 20px 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">EMPS</div>
+    </header>
+
+    <main>
+        <section class="conteudo">
+            <span class="versao">VERSÃO 1.0.0 · ANDROID</span>
+
+            <h1>Aplicativo EMPS</h1>
+
+            <p>
+                Acesse o aplicativo EMPS e acompanhe as funcionalidades
+                de monitoramento integradas ao sistema.
+            </p>
+
+            <a class="botao" href="https://github.com/LuixG-BR/EMPS/releases/latest/download/EMPS-v1.0.0.apk">
+                Baixar aplicativo Android
+            </a>
+
+            <p class="requisitos">
+                Arquivo APK · Aproximadamente 94,8 MB
+            </p>
+        </section>
+
+        <section class="qr-card">
+            <h2>Instale pelo celular</h2>
+
+            <p>
+                Aponte a câmera do celular para o QR Code
+                e acesse esta página de instalação.
+            </p>
+
+            <img id="qrcode" alt="QR Code para acessar a página de download do EMPS">
+        </section>
+    </main>
+
+    <div class="aviso">
+        <strong>Importante:</strong>
+        O EMPS é um protótipo acadêmico e não é um dispositivo
+        médico validado. Não substitui avaliação, diagnóstico
+        ou acompanhamento profissional.
+    </div>
+
+    <footer>
+        EMPS — Sistema de Monitoramento e Prevenção da Epilepsia
+        <br><br>
+        <a href="/">Voltar ao site institucional</a>
+    </footer>
+
+    <script>
+        const enderecoPagina = window.location.origin + "/download";
+
+        const qrCode = document.getElementById("qrcode");
+
+        qrCode.src =
+            "https://api.qrserver.com/v1/create-qr-code/" +
+            "?size=250x250&data=" +
+            encodeURIComponent(enderecoPagina);
+    </script>
+
+</body>
+
+</html>
